@@ -1,15 +1,13 @@
+import { StudentAvatar } from "@/components/student-avatar";
 import { fetchStudentData } from "@/lib/api";
-import { IMAGE_BASE_URL } from "@/lib/constants";
 import { groupStudentsBy } from "@/lib/utils";
-import Image from "next/image";
 
 /**
  * @param metricHeight Metric height in centimeters, ending in "cm". E.g. "180cm".
  * @returns Imperial height in feet and inches. E.g. "5'11". If the input parameter cannot be parsed correctly, it will be returned as is.
  */
 const metricHeightToImperial = (metricHeight: string): string => {
-  const match = metricHeight.match(/^(\d+)cm$/);
-  if (!match) {
+  if (!metricHeight.match(/^(\d+)cm$/)) {
     return metricHeight;
   }
   const cm = Number(metricHeight.slice(0, -2));
@@ -35,31 +33,33 @@ export default async function Page() {
   );
 
   return (
-    <main className="container mx-auto p-8">
+    <main className="container mx-auto">
       <h1 className="mb-4 text-3xl font-bold">By Height</h1>
-      <div className="flex flex-col gap-2">
-        {sortedStudentsByHeight.map(([height, students]) => (
-          <div key={height} className="flex">
-            <div className="w-32 shrink-0 self-center">
-              {`${height} (${metricHeightToImperial(height)})`}
-            </div>
-            <div className="flex flex-wrap gap-1">
-              {students
-                ?.sort((a, b) => a.PersonalName.localeCompare(b.PersonalName))
-                .map((student) => (
-                  <Image
-                    key={student.Id}
-                    src={`${IMAGE_BASE_URL}/student/collection/${student.Id}.webp`}
-                    alt={student.PersonalName}
-                    width={200}
-                    height={226}
-                    className="w-20 rounded-full"
-                  />
-                ))}
-            </div>
-          </div>
-        ))}
-      </div>
+
+      <table className="table-auto">
+        <tbody>
+          {sortedStudentsByHeight.map(([height, students]) => (
+            <tr key={height}>
+              <td className="max-w-32">{`${height} (${metricHeightToImperial(height)})`}</td>
+              <td>
+                <div className="flex flex-wrap gap-1">
+                  {students
+                    ?.sort((a, b) =>
+                      a.PersonalName.localeCompare(b.PersonalName),
+                    )
+                    .map((student) => (
+                      <StudentAvatar
+                        key={student.Id}
+                        student={student}
+                        className="w-20"
+                      />
+                    ))}
+                </div>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </main>
   );
 }

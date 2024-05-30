@@ -1,6 +1,5 @@
 import { fetchStudentData } from "@/lib/api";
-import Image from "next/image";
-import { IMAGE_BASE_URL } from "@/lib/constants";
+import { StudentAvatar } from "@/components/student-avatar";
 
 export default async function HomePage() {
   const data = await fetchStudentData();
@@ -9,22 +8,16 @@ export default async function HomePage() {
     return <div>Failed to fetch data...</div>;
   }
 
-  console.log("data", data);
-
-  const someData = data.slice(0, 16);
+  const someData = data.slice(0, 8);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+    <main className="flex flex-col items-center justify-center gap-4">
+      <h1 className="max-w-prose text-4xl font-bold">
+        this is a placeholder page.
+      </h1>
       <div className="grid grid-cols-4 gap-4">
         {someData.map((student) => (
-          <Image
-            key={student.Id}
-            src={`${IMAGE_BASE_URL}/student/collection/${student.Id}.webp`}
-            alt={student.PersonalName}
-            width={200}
-            height={226}
-            className="rounded-full"
-          />
+          <StudentAvatar key={student.Id} student={student} />
         ))}
       </div>
     </main>
